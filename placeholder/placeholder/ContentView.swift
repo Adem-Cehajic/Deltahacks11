@@ -6,19 +6,28 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct ContentView: View {
+    @State private var capturedImage: UIImage?
+    @State private var isCameraPresented = false
+
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            if let image = capturedImage {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+            }
+            Button("Open Camera") {
+                isCameraPresented = true
+            }
+            .sheet(isPresented: $isCameraPresented) {
+                CameraView(capturedImage: $capturedImage, isCameraPresented: $isCameraPresented)
+            }
         }
-        .padding()
     }
 }
-
 #Preview {
     ContentView()
 }
