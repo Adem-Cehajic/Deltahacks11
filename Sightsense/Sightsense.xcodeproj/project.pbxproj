@@ -11,6 +11,7 @@
 		CF2AE9832D330039001A5CFD /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF2AE9822D330039001A5CFD /* ContentView.swift */; };
 		CF2AE9852D33003A001A5CFD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CF2AE9842D33003A001A5CFD /* Assets.xcassets */; };
 		CF2AE9882D33003A001A5CFD /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CF2AE9872D33003A001A5CFD /* Preview Assets.xcassets */; };
+		CF2AE98F2D330172001A5CFD /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF2AE98E2D330172001A5CFD /* CameraManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +20,7 @@
 		CF2AE9822D330039001A5CFD /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		CF2AE9842D33003A001A5CFD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CF2AE9872D33003A001A5CFD /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		CF2AE98E2D330172001A5CFD /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +53,7 @@
 		CF2AE97F2D330039001A5CFD /* Sightsense */ = {
 			isa = PBXGroup;
 			children = (
+				CF2AE98E2D330172001A5CFD /* CameraManager.swift */,
 				CF2AE9802D330039001A5CFD /* SightsenseApp.swift */,
 				CF2AE9822D330039001A5CFD /* ContentView.swift */,
 				CF2AE9842D33003A001A5CFD /* Assets.xcassets */,
@@ -138,6 +141,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CF2AE9832D330039001A5CFD /* ContentView.swift in Sources */,
+				CF2AE98F2D330172001A5CFD /* CameraManager.swift in Sources */,
 				CF2AE9812D330039001A5CFD /* SightsenseApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -275,6 +279,7 @@
 				DEVELOPMENT_TEAM = X9W59C2LB4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "\"We need access to your camera for object tracking.\"";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -304,6 +309,7 @@
 				DEVELOPMENT_TEAM = X9W59C2LB4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "\"We need access to your camera for object tracking.\"";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

@@ -8,17 +8,29 @@
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
-    }
-}
+    private let cameraManager = CameraManager()
 
-#Preview {
-    ContentView()
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Object Tracker")
+                .font(.title)
+                .padding()
+
+            Button("Start Camera") {
+                cameraManager.start()
+            }
+            .padding()
+            .background(Color.blue)
+            .foregroundColor(.white)
+            .cornerRadius(10)
+
+            Button("Stop Camera") {
+                cameraManager.stop()
+            }
+            .padding()
+            .background(Color.red)
+            .foregroundColor(.white)
+            .cornerRadius(10)
+        }
+    }
 }
