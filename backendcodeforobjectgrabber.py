@@ -7,10 +7,10 @@ import numpy as np
 import math
 import time
 # yolo model
-model = YOLO("yolov8s.pt") 
+model = YOLO("yolov8m.pt") 
 
 #depthestimator model also note to SAMMY if running this from ur computer change device to 'cuda' i only put cpu cuz mine isnt powerful enough
-depth_estimator = pipeline(task="depth-estimation", model="depth-anything/Depth-Anything-V2-Small-hf", device='cpu')
+depth_estimator = pipeline(task="depth-estimation", model="depth-anything/Depth-Anything-V2-Small-hf", device='cuda')
 #SAMMY PLEASE READ THIS ONE COMMENT
 
 # hand tracker model
