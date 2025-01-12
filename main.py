@@ -100,7 +100,7 @@ async def process_image(file: UploadFile = File(...)):
             results = "Invalid action specified."
         
 
-        # Extract the text (you can modify based on your task)
+        # Extract the text (you can modify based on your task)yay
         recognized_text = results
 
         print("Recognized Text:", recognized_text)
