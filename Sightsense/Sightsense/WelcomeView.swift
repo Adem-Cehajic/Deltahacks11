@@ -1,12 +1,13 @@
 import SwiftUI
 
+// View for a moving gradient background
 struct MovingGradientBackground: View {
     @State private var animateGradient = false
     
     var body: some View {
         LinearGradient(
             colors: [
-                Color(hex: "#afc4d6"),  // Light blue from logo
+                Color(hex: "#afc4d6"),  // Light blue
                 Color(hex: "#4682b4"),  // Steel blue
                 Color(hex: "#000080")   // Navy
             ],
@@ -15,13 +16,17 @@ struct MovingGradientBackground: View {
         )
         .ignoresSafeArea()
         .onAppear {
-            withAnimation(.linear(duration: 5.0).repeatForever(autoreverses: true)) {
+            withAnimation(
+                Animation.linear(duration: 5.0)
+                    .repeatForever(autoreverses: true)
+            ) {
                 animateGradient.toggle()
             }
         }
     }
 }
 
+// View for pulsating text
 struct PulsatingText: View {
     @State private var scale: CGFloat = 1.0
     let text: String
@@ -32,23 +37,22 @@ struct PulsatingText: View {
             .fontWeight(.medium)
             .foregroundColor(.white)
             .scaleEffect(scale)
-            .animation(
-                Animation
-                    .easeInOut(duration: 1.5)
-                    .repeatForever(autoreverses: true),
-                value: scale
-            )
             .onAppear {
-                scale = 1.05
+                withAnimation(
+                    Animation.easeInOut(duration: 1.5)
+                        .repeatForever(autoreverses: true)
+                ) {
+                    scale = 1.05
+                }
             }
     }
 }
 
+// Main Welcome View
 struct WelcomeView: View {
     let onAppearAction: () -> Void
     let onNext: () -> Void
     @State private var tapped = false
-    @State private var textScale: CGFloat = 1.0
     
     var body: some View {
         ZStack {
@@ -87,29 +91,40 @@ struct WelcomeView: View {
     }
 }
 
-// Color extension for hex support
 extension Color {
     init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        // Ensure the input string is sanitized
+        let sanitizedHex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
+        Scanner(string: sanitizedHex).scanHexInt64(&int)
+
         let a, r, g, b: UInt64
-        switch hex.count {
-        case 3:
-            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6:
-            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8:
-            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default:
+        switch sanitizedHex.count {
+        case 3: // Short hex (e.g., "#FFF" -> "#FFFFFF")
+            (a, r, g, b) = (255,
+                            (int >> 8) * 17,
+                            (int >> 4 & 0xF) * 17,
+                            (int & 0xF) * 17)
+        case 6: // Standard hex (e.g., "#RRGGBB")
+            (a, r, g, b) = (255,
+                            int >> 16,
+                            int >> 8 & 0xFF,
+                            int & 0xFF)
+        case 8: // ARGB hex (e.g., "#AARRGGBB")
+            (a, r, g, b) = (int >> 24,
+                            int >> 16 & 0xFF,
+                            int >> 8 & 0xFF,
+                            int & 0xFF)
+        default: // Default to opaque black for invalid input
             (a, r, g, b) = (255, 0, 0, 0)
         }
+        
         self.init(
             .sRGB,
-            red: Double(r) / 255,
-            green: Double(g) / 255,
-            blue: Double(b) / 255,
-            opacity: Double(a) / 255
+            red: Double(r) / 255.0,
+            green: Double(g) / 255.0,
+            blue: Double(b) / 255.0,
+            opacity: Double(a) / 255.0
         )
     }
 }

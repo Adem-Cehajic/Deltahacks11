@@ -49,7 +49,7 @@ Thank you. You'll now be on the home screen where you can talk to SightSense any
 
     private func startTutorial() {
         let utterance = AVSpeechUtterance(string: tutorialScript)
-        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        utterance.voice = AVSpeechSynthesisVoice(language: "en-GB")
         
         tts.delegate = SpeechDelegate {
             withAnimation(.easeOut(duration: 0.3)) {
