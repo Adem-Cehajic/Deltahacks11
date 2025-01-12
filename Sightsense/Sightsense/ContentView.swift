@@ -40,20 +40,27 @@ struct ContentView: View {
                 }
 
             case .permissions:
-                PermissionsView(onPermissionsComplete: {
-                    // Once permissions are granted (or user moves on),
-                    // go to tutorial
+                PermissionsView(tts: tts, onPermissionsComplete: {
                     flowState = .tutorial
                 })
 
             case .tutorial:
                 TutorialView(tts: tts) {
-                    // End of tutorial goes to home
-                    flowState = .home
+                    withAnimation(.easeOut(duration: 1)) {
+                        flowState = .home
+                    }
+                }
+                .onTapGesture {
+                    // Stop any ongoing speech
+                    tts.stopSpeaking(at: .immediate)
+                    // Transition to home screen
+                    withAnimation(.easeOut(duration: 1)) {
+                        flowState = .home
+                    }
                 }
 
+
             case .home:
-                // The main home page with voice interface
                 HomeView()
             }
         }

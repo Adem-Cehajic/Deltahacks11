@@ -3,6 +3,8 @@ import AVFoundation
 import Speech
 
 struct PermissionsView: View {
+    // Use synthesizer from RootView
+    let tts: AVSpeechSynthesizer
     let onPermissionsComplete: () -> Void
 
     @State private var showExplanation = true
@@ -12,13 +14,13 @@ struct PermissionsView: View {
             if showExplanation {
                 Text("We need camera and microphone access to detect objects and hear you speak.")
                     .padding()
+
                 Button("Allow Access") {
+                    // Speak "Requesting permissions, please grant access..." if desired
                     requestAllPermissions {
                         onPermissionsComplete()
                     }
                 }
-            } else {
- 
             }
         }
         .font(.title2)
@@ -26,7 +28,9 @@ struct PermissionsView: View {
         .multilineTextAlignment(.center)
         .padding()
         .onAppear {
-            // Possibly speak explanation here if desired
+            speak(
+                "We need camera and microphone access to detect objects and hear you speak. Please tap the Allow Access button to continue."
+            )
         }
     }
 
@@ -43,5 +47,11 @@ struct PermissionsView: View {
                 }
             }
         }
+    }
+
+    private func speak(_ text: String) {
+        let utterance = AVSpeechUtterance(string: text)
+        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        tts.speak(utterance)
     }
 }
