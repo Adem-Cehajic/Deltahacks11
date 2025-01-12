@@ -61,7 +61,7 @@ class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
 
     private func sendFrameToBackend(image: UIImage) {
-        guard let url = URL(string: "PLACEHOLDER_URL"),
+        guard let url = URL(string: "http://172.18.51.126:8000/process-image"),
               let jpegData = image.jpegData(compressionQuality: 0.8) else { return }
 
         var request = URLRequest(url: url)

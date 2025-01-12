@@ -94,11 +94,10 @@ struct HomeView: View {
             let jsonData = try JSONSerialization.data(withJSONObject: parameters)
             request.httpBody = jsonData
         } catch {
-            print("Error serializing JSON: \(error)")
+            print("Error serializing JSON:", error)
             return
         }
         
-        // Create the data task
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("Request error:", error)
@@ -109,19 +108,22 @@ struct HomeView: View {
                 return
             }
             
-            // Convert the server's response to a string directly
             if let responseString = String(data: data, encoding: .utf8) {
                 DispatchQueue.main.async {
-                    // Update UI and trigger TTS simultaneously
                     self.serverResponseText = responseString
                     self.speak(responseString)
+                    
+                    // Only start sending frames if the response is the dedicated string:
+                    if responseString == "Ok, I will begin reading the text, please point your camera towards it" {
+                        self.cameraManager.start() // Start sending frames
+                    }
                 }
             } else {
                 print("Unable to decode server response as string")
             }
         }
         
-        // Start the task
         task.resume()
     }
+    
 }
