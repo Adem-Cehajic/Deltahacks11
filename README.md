@@ -1,5 +1,2 @@
 # Deltahacks11
-our repository for deltahacks 11 change later
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-co = cohere.Client('d0fP2Y18zVOnIgkn3paYQ3ToX018ERGZBttaADE1')
-sk-abcdef1234567890abcdef1234567890abcdef12
+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
