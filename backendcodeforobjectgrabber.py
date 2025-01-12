@@ -38,6 +38,8 @@ if not cap.isOpened():
 #function for full thing which is called upon wanting to find an object
 def handtoobjectfinder():
     name = ''
+    directions = ["Right", "Up-Right", "Up", "Up-Left", 
+     "Left", "Down-Left", "Down", "Down-Right"]
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -114,19 +116,28 @@ def handtoobjectfinder():
             dx = object_x - hand_x
             dy = object_y - hand_y
             angle_radians = math.atan2(dy, dx)
-            print(angle_radians)
+            angle_radians = (angle_radians + math.pi) % (2 * math.pi) - math.pi
+            angleindex = round((angle_radians + math.pi) / (math.pi / 4)) % 8
+            
+            if hand_y <= 480 and hand_x <= 640:
+                obd, handd = depth_map[object_y,object_x], depth_map[hand_y,hand_x]
+                print(obd,handd)
+                if handd - obd >= 80 or handd - obd <= -80:
+                    print('go forward')
+                else: print(directions[angleindex])
             cv2.line(frame, (hand_x, hand_y), (object_x, object_y), (255, 0, 0), 2)
+
 
         #IMPORTANT REMEMBER THIS
         combined_frame = cv2.addWeighted(frame, 0.6, depth_colored, 0.4, 0)  # Blend annotations with depth
         #UNCOMMENTING THIS WILL BRING DEPTH COLOR BACK TO DEMO
-    
     # Display the annotated frame
         cv2.imshow("YOLO + Mediapipe Hands Tracking", combined_frame)
 
     # Break the loop if 'q' is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
 
 handtoobjectfinder()
 
