@@ -62,5 +62,6 @@ image_path = capture_image()
 if image_path:
     description = analyze_image_with_gpt(image_path, api_key)
     print("Image Description:", description)
+    delete_image(image_path)  # Delete the image after analysis
 else:
     print("Image capture failed. Cannot proceed with analysis.")
