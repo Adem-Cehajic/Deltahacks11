@@ -1,10 +1,10 @@
 import cv2
 import base64
 import os
-from openai import OpenAI
 from dotenv import load_dotenv
+from openai import OpenAI
 
-# Load environment variables from .env
+# Load environment variables from the .env file
 load_dotenv()
 
 def capture_image():
@@ -53,13 +53,16 @@ def analyze_image_with_gpt(image_path, api_key):
         return f"Error: {str(e)}"
 
 # Main execution
-api_key = os.getenv("OPENAI_API_KEY")  # Load API key from environment variable
-if not api_key:
-    print("Error: API key not found. Please ensure it is set in the .env file.")
-else:
-    image_path = capture_image()
-    if image_path:
-        description = analyze_image_with_gpt(image_path, api_key)
-        print("Image Description:", description)
+if __name__ == "__main__":
+    # Retrieve the API key from the environment (.env file)
+    api_key = os.getenv("OPENAI_API_KEY")
+    
+    if not api_key:
+        print("Error: API key not found. Please ensure it is set in the .env file.")
     else:
-        print("Image capture failed. Cannot proceed with analysis.")
+        image_path = capture_image()
+        if image_path:
+            description = analyze_image_with_gpt(image_path, api_key)
+            print("Image Description:", description)
+        else:
+            print("Image capture failed. Cannot proceed with analysis.")
