@@ -28,11 +28,7 @@ def analyze_image_with_gpt(image_path, api_key):
         image_data = base64.b64encode(image_file.read()).decode("utf-8")
 
     prompt = (
-        "Analyze the provided image and generate a practical, descriptive explanation. "
-        "Include key details about objects, their locations, and the overall environment. "
-        "Focus on providing actionable insights for navigation, interaction, or understanding of the scene. "
-        "Highlight any potential hazards, accessibility features, or notable items relevant to the user. "
-        "Use clear and concise language that emphasizes utility over aesthetics."
+       "Describe the main elements of the image in simple, direct language. Focus on key objects, their positions, and basic room features. Avoid detailed adjectives. Mention people if present. Keep the description very brief, suitable for about 5-7 seconds of speech. Explain this as if the user is blind or has impaired vision in adequate detail."
     )
 
     try:
@@ -54,7 +50,10 @@ def analyze_image_with_gpt(image_path, api_key):
         return f"Error: {str(e)}"
 
 # Main execution
-api_key = "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"  # Replace with your actual OpenAI API key
+api_key = os.environ.get('OPENAI_API_KEY')
+if not api_key:
+    raise ValueError("No API key found. Set the OPENAI_API_KEY environment variable.")
+
 image_path = capture_image()
 if image_path:
     description = analyze_image_with_gpt(image_path, api_key)
