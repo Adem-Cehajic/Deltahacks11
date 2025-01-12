@@ -49,7 +49,6 @@ class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
 
         guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
 
-        // Convert image buffer to UIImage
         let ciImage = CIImage(cvPixelBuffer: imageBuffer)
         let context = CIContext()
 
@@ -74,7 +73,6 @@ class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
                 print("Error uploading frame:", error)
                 return
             }
-
             print("Frame uploaded successfully")
         }.resume()
     }

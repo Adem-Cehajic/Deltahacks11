@@ -1,68 +1,67 @@
 import SwiftUI
 import AVFoundation
 
-struct ContentView: View {
-    @State private var showLogo = true // Controls logo visibility
-    @State private var showPrompt = false // Controls prompt visibility
-    @State private var showCameraStatusText = false // Controls camera status text visibility
-    @State private var audioPlayer: AVAudioPlayer?
+enum AppFlowState {
+    case loading
+    case welcome      // "Tap to get started"
+    case permissions  // Camera & mic permission
+    case tutorial     // 2-minute voice tutorial
+    case home         // Final home page with voice interface
+}
 
-    private let cameraManager = CameraManager()
+struct ContentView: View {
+    @State private var flowState: AppFlowState = .loading
+
+    // We’ll share one TTS synthesizer for spoken prompts
+    private let tts = AVSpeechSynthesizer()
 
     var body: some View {
         ZStack {
-            // Set the background color using RGB values for hex #afc4d6
+            // Common background color #afc4d6
             Color(red: 175 / 255, green: 196 / 255, blue: 214 / 255)
-                .ignoresSafeArea() // Ensures the background covers the entire screen
-
-            if showLogo {
-                Image("SightsenseLogo")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 200, height: 200)
-                    .transition(.opacity)
-                    .onAppear {
-                        playSound() // Play sound when the logo appears
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) { // Adjust fade duration as needed
-                            withAnimation(.easeOut(duration: 1)) {
-                                showLogo = false
-                                showPrompt = true
-                            }
-                        }
+                .ignoresSafeArea()
+            
+            switch flowState {
+            case .loading:
+                LoadingView {
+                    // After 3 seconds, transition to welcome
+                    withAnimation(.easeOut(duration: 1)) {
+                        flowState = .welcome
                     }
-            }
-
-            if showPrompt {
-                VStack {
-                    Text("Tap anywhere to continue")
-                        .font(.title)
-                        .foregroundColor(.blue)
-                        .onTapGesture {
-                            withAnimation(.easeOut(duration: 1)) {
-                                showPrompt = false
-                                showCameraStatusText = true
-                                cameraManager.start() // Start capturing frames when user taps
-                            }
-                        }
                 }
-            }
 
-            if showCameraStatusText {
-                Text("Looking around with the camera...")
-                    .font(.headline)
-                    .foregroundColor(.gray)
+            case .welcome:
+                WelcomeView {
+                    // When user taps, read “Tap to get started.”
+                    speak("Tap to get started")
+                } onNext: {
+                    // Once they tap, we move to permissions
+                    flowState = .permissions
+                }
+
+            case .permissions:
+                PermissionsView(onPermissionsComplete: {
+                    // Once permissions are granted (or user moves on),
+                    // go to tutorial
+                    flowState = .tutorial
+                })
+
+            case .tutorial:
+                TutorialView(tts: tts) {
+                    // End of tutorial goes to home
+                    flowState = .home
+                }
+
+            case .home:
+                // The main home page with voice interface
+                HomeView()
             }
         }
     }
 
-    func playSound() {
-        guard let url = Bundle.main.url(forResource: "soundfileplaceholder", withExtension: "mp3") else { return } // Replace with sound file name
-
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: url)
-            audioPlayer?.play()
-        } catch {
-            print("Error playing sound:", error.localizedDescription)
-        }
+    private func speak(_ text: String) {
+        let utterance = AVSpeechUtterance(string: text)
+        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        tts.speak(utterance)
     }
 }
