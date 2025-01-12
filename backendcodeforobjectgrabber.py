@@ -119,10 +119,10 @@ def handtoobjectfinder():
             angle_radians = (angle_radians + math.pi) % (2 * math.pi) - math.pi
             angleindex = round((angle_radians + math.pi) / (math.pi / 4)) % 8
             
-            if hand_y <= 480 and hand_x <= 640:
+            if hand_y < 460 and hand_x < 620:
                 obd, handd = depth_map[object_y,object_x], depth_map[hand_y,hand_x]
                 print(obd,handd)
-                if handd - obd >= 80 or handd - obd <= -80:
+                if abs(int(handd) - int(obd)) >= 80:
                     print('go forward')
                 else: print(directions[angleindex])
             cv2.line(frame, (hand_x, hand_y), (object_x, object_y), (255, 0, 0), 2)
