@@ -50,7 +50,7 @@ def analyze_image_with_gpt(image_path, api_key):
         return f"Error: {str(e)}"
 
 # Main execution
-api_key = os.environ.get('OPENAI_API_KEY')
+api_key = os.environ.get('API_Key')
 if not api_key:
     raise ValueError("No API key found. Set the OPENAI_API_KEY environment variable.")
 
