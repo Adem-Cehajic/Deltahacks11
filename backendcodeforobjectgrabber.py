@@ -117,14 +117,18 @@ def handtoobjectfinder():
             angle_radians = math.atan2(dy, dx)
             angle_radians = (angle_radians + math.pi) % (2 * math.pi) - math.pi
             angleindex = round((angle_radians + math.pi) / (math.pi / 4)) % 8
-            
+            dist = math.sqrt((object_x - hand_x)**2 + (object_y - hand_y)**2)
             if hand_y < 460 and hand_x < 620:
                 obd, handd = depth_map[object_y,object_x], depth_map[hand_y,hand_x]
                 print(obd,handd)
                 if abs(int(handd) - int(obd)) >= 80:
                     print('go forward')
+                elif (abs(int(handd) - int(obd)) <= 30) and dist <= 150:
+                    print('object within reach')
                 else: print(directions[angleindex])
             cv2.line(frame, (hand_x, hand_y), (object_x, object_y), (255, 0, 0), 2)
+            print(dist)
+
 
 
         #IMPORTANT REMEMBER THIS
