@@ -1,7 +1,8 @@
+# Image to Description
 import cv2
 import base64
-import os
 from openai import OpenAI
+from APIKEY import api_key  # Import the API key
 
 def capture_image():
     cap = cv2.VideoCapture(0)
@@ -50,13 +51,9 @@ def analyze_image_with_gpt(image_path, api_key):
         return f"Error: {str(e)}"
 
 # Main execution
-api_key = os.environ.get('API_Key')
-if not api_key:
-    raise ValueError("No API key found. Set the OPENAI_API_KEY environment variable.")
-
 image_path = capture_image()
 if image_path:
-    description = analyze_image_with_gpt(image_path, api_key)
+    description = analyze_image_with_gpt(image_path, api_key)  # Use the imported API key
     print("Image Description:", description)
 else:
     print("Image capture failed. Cannot proceed with analysis.")
