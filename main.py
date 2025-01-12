@@ -1,15 +1,9 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 #python -m uvicorn main:app --reload
+#python -m uvicorn main:app --host 172.18.51.126 --port 8000
 app = FastAPI()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["172.18.30.198"],  # Change to specific domains if needed
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 
 @app.post("/speech")
