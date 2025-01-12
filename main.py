@@ -21,6 +21,7 @@ import io
 
 #python -m uvicorn main:app --reload
 #python -m uvicorn main:app --host 172.18.51.126 --port 8000
+#python -m uvicorn main:app --host 172.18.179.5 --port 8000
 sentance_model = SentenceTransformer('all-MiniLM-L6-v2')
 
 # yolo model
@@ -164,17 +165,14 @@ def hand_to_object_finder(image,i):
         angle_radians = (angle_radians + math.pi) % (2 * math.pi) - math.pi
         angleindex = round((angle_radians + math.pi) / (math.pi / 4)) % 8
         dist = math.sqrt((object_x - hand_x) ** 2 + (object_y - hand_y) ** 2)
-        if hand_y < image.shape[0] - 20 and hand_x < image.shape[1] - 20:
-            obd, handd = depth_map[object_y, object_x], depth_map[hand_y, hand_x]
-            print(obd, handd)
-            if abs(int(handd) - int(obd)) >= 80:
-                print('go forward')
-            elif (abs(int(handd) - int(obd)) <= 30) and dist <= 150:
-                print('object within reach')
-            else:
-                print(directions[angleindex])
-        cv2.line(image, (hand_x, hand_y), (object_x, object_y), (255, 0, 0), 2)
-        print(dist)
+        obd, handd = depth_map[object_y, object_x], depth_map[hand_y, hand_x]
+        if abs(int(handd) - int(obd)) >= 80:
+            return 'go forward'
+        elif (abs(int(handd) - int(obd)) <= 30) and dist <= 150:
+            return 'object within reach'
+        else:
+            return directions[angleindex]
+
 
 
 load_dotenv()
