@@ -1,1 +1,14 @@
+# Ignore sensitive Python file
+APIKEY.py
 
+# Ignore Python cache files
+*.pyc
+__pycache__/
+
+# Ignore virtual environments
+venv/
+env/
+
+# Ignore IDE settings
+.vscode/
+.idea/
