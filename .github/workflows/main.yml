@@ -17,5 +17,5 @@ jobs:
         pip install opencv-python-headless openai
     - name: Run image analysis
       env:
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        API_Key: ${{ secrets.API_Key }}
       run: python image_analysis.py
