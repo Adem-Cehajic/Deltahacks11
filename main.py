@@ -21,7 +21,7 @@ import io
 
 #python -m uvicorn main:app --reload
 #python -m uvicorn main:app --host 172.18.51.126 --port 8000
-#172.18.179.5
+#python -m uvicorn main:app --host 172.18.179.5 --port 8000
 sentance_model = SentenceTransformer('all-MiniLM-L6-v2')
 
 # yolo model
