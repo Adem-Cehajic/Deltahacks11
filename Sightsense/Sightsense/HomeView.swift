@@ -1,6 +1,8 @@
 import SwiftUI
 import AVFoundation
 
+
+
 struct HomeView: View {
     @ObservedObject private var speechRecognizer = SpeechRecognizer()
 
