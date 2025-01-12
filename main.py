@@ -53,6 +53,39 @@ def perform_ocr_and_speak(image_path, language='en'):
     
     return extracted_text
 
+def analyze_image_with_gpt(image, api_key):
+    client = OpenAI(api_key=api_key)
+
+    # Convert the image to base64
+    _, buffer = cv2.imencode('.jpg', image)
+    image_data = base64.b64encode(buffer).decode("utf-8")
+
+    prompt = (
+         "Describe the main elements of the image in simple, direct language. "
+        "Focus on key objects, their positions, and basic room features. Avoid detailed adjectives. "
+        "Mention people if present. Keep the description very brief, suitable for about 5-7 seconds of speech. "
+        "Explain this as if the user is blind or has impaired vision in adequate detail."
+    )
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_data}"}}
+                    ]
+                }
+            ],
+            max_tokens=300
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"Error: {str(e)}"
+load_dotenv()
+api_key = os.getenv("OPENAI_API_KEY")
 
 app = FastAPI()
 prompts = ['Read the text', 'describe what I am viewing', 'Identify object location', 'Other']
@@ -92,8 +125,8 @@ async def process_image(file: UploadFile = File(...)):
         # Process the image (example: OCR pipeline)
         if response_toapp == 'Ok, I will begin reading the text, please point your camera towards it':
             results = perform_ocr_and_speak(image)
-        #elif response_toapp == 'Ok, I will describe what is in front of you':
-            #results = process_object_description(image)
+        elif response_toapp == 'Ok, I will describe what is in front of you':
+            results = process_object_description(image)
         #elif response_toapp == 'Ok, locating the object':
             #results = locate_object(image)
         else:
