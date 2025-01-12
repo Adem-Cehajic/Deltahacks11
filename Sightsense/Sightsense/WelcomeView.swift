@@ -100,17 +100,17 @@ extension Color {
 
         let a, r, g, b: UInt64
         switch sanitizedHex.count {
-        case 3: // Short hex (e.g., "#FFF" -> "#FFFFFF")
+        case 3:
             (a, r, g, b) = (255,
                             (int >> 8) * 17,
                             (int >> 4 & 0xF) * 17,
                             (int & 0xF) * 17)
-        case 6: // Standard hex (e.g., "#RRGGBB")
+        case 6:
             (a, r, g, b) = (255,
                             int >> 16,
                             int >> 8 & 0xFF,
                             int & 0xFF)
-        case 8: // ARGB hex (e.g., "#AARRGGBB")
+        case 8:
             (a, r, g, b) = (int >> 24,
                             int >> 16 & 0xFF,
                             int >> 8 & 0xFF,
