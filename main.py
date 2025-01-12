@@ -16,6 +16,9 @@ from dotenv import load_dotenv
 from openai import OpenAI
 import shutil
 import cv2
+from fastapi.responses import JSONResponse
+import io
+
 
 #python -m uvicorn main:app --reload
 #python -m uvicorn main:app --host 172.18.51.126 --port 8000
@@ -54,7 +57,7 @@ def perform_ocr_and_speak(image_path, language='en'):
 app = FastAPI()
 prompts = ['Read the text', 'describe what I am viewing', 'Identify object location', 'Other']
 doc_embeddings = sentance_model.encode(prompts, convert_to_tensor=True)
-
+response_toapp = ''
 
 #server requests
 @app.post("/speech")
@@ -78,4 +81,33 @@ async def receive_speech(request: Request):
     print("Received from Swift:", recognized_text)
     # ...use recognized_text to trigger your YOLO, Mediapipe, etc.
     return (response_toapp)
+
+@app.post("/process-image")
+async def process_image(file: UploadFile = File(...)):
+    try:
+        # Read the uploaded image file
+        contents = await file.read()
+        image = Image.open(io.BytesIO(contents)).convert("RGB")
+
+        # Process the image (example: OCR pipeline)
+        if response_toapp == 'Ok, I will begin reading the text, please point your camera towards it':
+            results = perform_ocr_and_speak(image)
+        #elif response_toapp == 'Ok, I will describe what is in front of you':
+            #results = process_object_description(image)
+        #elif response_toapp == 'Ok, locating the object':
+            #results = locate_object(image)
+        else:
+            results = "Invalid action specified."
+        
+
+        # Extract the text (you can modify based on your task)
+        recognized_text = results
+
+        print("Recognized Text:", recognized_text)
+
+        # Return the recognized text as a response
+        return JSONResponse(content={"recognized_text": recognized_text})
+
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=500)
 
