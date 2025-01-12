@@ -101,6 +101,8 @@ class SpeechDelegate: NSObject, AVSpeechSynthesizerDelegate, ObservableObject {
 
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
         onDone()
+        
+        
     }
 }
 

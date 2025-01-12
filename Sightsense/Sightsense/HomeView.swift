@@ -4,13 +4,14 @@ import AVFoundation
 struct HomeView: View {
     @ObservedObject private var speechRecognizer = SpeechRecognizer()
     private let cameraManager = CameraManager()
-
+    
     @State private var isListening = false
     @State private var finalRecognizedText = ""
-
+    @State private var serverResponseText = "" // Holds the server's response
+    
     // Text-to-speech synthesizer
     private let synthesizer = AVSpeechSynthesizer()
-
+    
     var body: some View {
         ZStack {
             Color(red: 175/255, green: 196/255, blue: 214/255)
@@ -20,7 +21,7 @@ struct HomeView: View {
                 Text("SightSense")
                     .font(.largeTitle)
                     .padding(.bottom, 50)
-
+                
                 // Circle with white outline and stronger pulsing effect
                 Circle()
                     .stroke(Color.white, lineWidth: 4)
@@ -37,8 +38,9 @@ struct HomeView: View {
                         if isListening {
                             // Start listening
                             speak("Listening")
-                            // Reset any previous recognized text
+                            // Reset any previous recognized text and server response
                             finalRecognizedText = ""
+                            serverResponseText = ""
                             
                             // Start continuous speech recognition
                             speechRecognizer.startRecording { recognizedText in
@@ -46,16 +48,27 @@ struct HomeView: View {
                                 finalRecognizedText = recognizedText
                                 print("Partial (or final) recognized text: \(recognizedText)")
                             }
-
+                            
                         } else {
                             // Stop listening and send to server
-                            speak("Waiting")
+                            speak("Processing your request")
                             speechRecognizer.stopRecording()
                             
                             // Send the final recognized text to the backend
                             sendRecognizedTextToServer(finalRecognizedText)
                         }
                     }
+                
+                Spacer()
+                
+                // Display the server's response on the screen
+                Text(serverResponseText)
+                    .font(.title2)
+                    .foregroundColor(.black)
+                    .padding()
+                    .multilineTextAlignment(.center)
+                
+                Spacer()
             }
         }
         .onAppear {
@@ -85,18 +98,30 @@ struct HomeView: View {
             return
         }
         
-        URLSession.shared.dataTask(with: request) { data, response, error in
+        // Create the data task
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
-                print("Request error: \(error)")
+                print("Request error:", error)
                 return
             }
             guard let data = data else {
                 print("No data returned")
                 return
             }
+            
+            // Convert the server's response to a string directly
             if let responseString = String(data: data, encoding: .utf8) {
-                print("Server response: \(responseString)")
+                DispatchQueue.main.async {
+                    // Update UI and trigger TTS simultaneously
+                    self.serverResponseText = responseString
+                    self.speak(responseString)
+                }
+            } else {
+                print("Unable to decode server response as string")
             }
-        }.resume()
+        }
+        
+        // Start the task
+        task.resume()
     }
 }
