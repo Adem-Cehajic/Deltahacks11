@@ -5,8 +5,7 @@ from transformers import pipeline
 from PIL import Image
 import numpy as np
 import math
-import time
-from sentence_transformers import SentenceTransformer, util 
+from sentence_transformers import SentenceTransformer, util
 
 #all model configas
 sentance_model = SentenceTransformer('all-MiniLM-L6-v2')
