@@ -1,5 +1,4 @@
 from fastapi import FastAPI, Request, File, UploadFile
-from fastapi.middleware.cors import CORSMiddleware
 from sentence_transformers import SentenceTransformer, util
 from ultralytics import YOLO
 import mediapipe as mp
@@ -84,6 +83,100 @@ def analyze_image_with_gpt(image, api_key):
         return response.choices[0].message.content
     except Exception as e:
         return f"Error: {str(e)}"
+#handsfunction
+def hand_to_object_finder(image,i):
+    image = cv2.imread("path_to_image.jpg")
+    name = ''
+    directions = ["Right", "Up-Right", "Up", "Up-Left",
+                  "Left", "Down-Left", "Down", "Down-Right"]
+
+    # Convert the input image to RGB
+    rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    pil_image = Image.fromarray(rgb_image)
+
+    # Run Mediapipe Hands on the image
+    hand_results = hands.process(rgb_image)
+
+    # Run YOLO model on the image
+    yolo_results = model(image)
+
+    # Run depth-estimation model on the image
+    depth_result = depth_estimator(pil_image)
+    depth_map = np.array(depth_result['depth'])  # Extract the depth map (as a NumPy array)
+
+    # Normalize the depth map for visualization (scale to 0-255)
+    normalized_depth = cv2.normalize(depth_map, None, 0, 255, cv2.NORM_MINMAX).astype('uint8')
+    depth_colored = cv2.applyColorMap(normalized_depth, cv2.COLORMAP_MAGMA)  # Colorize for better visualization
+
+    c = 0
+    things = []
+    x1s, y1s, x2s, y2s = 0, 0, 0, 0
+
+    # Draw YOLO detections
+    for box in yolo_results[0].boxes:
+        class_id = int(box.cls)
+        label = model.names[class_id]
+
+        # Skip people count
+        if class_id == 0:
+            c += 1
+            continue
+
+        # Get box coordinates
+        x1, y1, x2, y2 = map(int, box.xyxy[0])  # Bounding box coordinates
+        if name == label:
+            x1s, y1s, x2s, y2s = x1, y1, x2, y2
+
+        # Draw bounding box
+        cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
+
+        # Put label text
+        text = f"{label}"
+        cv2.putText(image, text, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+        things.append(model.names[class_id])
+
+    # Calculate vector for direction
+    if things:
+        doc_embeddings = sentance_model.encode(things, convert_to_tensor=True)
+        cosine_scores = util.cos_sim(i, doc_embeddings)[0]
+        ranked_docs = sorted(zip(cosine_scores.tolist(), things), reverse=True, key=lambda x: x[0])
+        score, name = ranked_docs[0]
+    object_x = (x1s + x2s) // 2
+    object_y = (y1s + y2s) // 2
+
+    # Process hands
+    if hand_results.multi_hand_landmarks:
+        for hand_landmarks in hand_results.multi_hand_landmarks:
+            mp_drawing.draw_landmarks(
+                image,
+                hand_landmarks,
+                mp_hands.HAND_CONNECTIONS,
+                mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2),
+                mp_drawing.DrawingSpec(color=(0, 0, 255), thickness=2, circle_radius=2),
+            )
+    if hand_results.multi_hand_landmarks and len(yolo_results[0].boxes) - c != 0:
+        hand_landmarks = hand_results.multi_hand_landmarks[0]
+        hand_x = int(hand_landmarks.landmark[mp_hands.HandLandmark.WRIST].x * image.shape[1])
+        hand_y = int(hand_landmarks.landmark[mp_hands.HandLandmark.WRIST].y * image.shape[0])
+        dx = object_x - hand_x
+        dy = object_y - hand_y
+        angle_radians = math.atan2(dy, dx)
+        angle_radians = (angle_radians + math.pi) % (2 * math.pi) - math.pi
+        angleindex = round((angle_radians + math.pi) / (math.pi / 4)) % 8
+        dist = math.sqrt((object_x - hand_x) ** 2 + (object_y - hand_y) ** 2)
+        if hand_y < image.shape[0] - 20 and hand_x < image.shape[1] - 20:
+            obd, handd = depth_map[object_y, object_x], depth_map[hand_y, hand_x]
+            print(obd, handd)
+            if abs(int(handd) - int(obd)) >= 80:
+                print('go forward')
+            elif (abs(int(handd) - int(obd)) <= 30) and dist <= 150:
+                print('object within reach')
+            else:
+                print(directions[angleindex])
+        cv2.line(image, (hand_x, hand_y), (object_x, object_y), (255, 0, 0), 2)
+        print(dist)
+
+
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 
@@ -110,7 +203,7 @@ async def receive_speech(request: Request):
     elif name == prompts[2]:
         response_toapp = 'Ok, locating the object'
     elif name == prompts[3]:
-        response_toapp = 'Ok, let me think'
+        response_toapp = 'I am not equipped to answer that please try asking a different question'
     print("Received from Swift:", recognized_text)
     # ...use recognized_text to trigger your YOLO, Mediapipe, etc.
     return (response_toapp)
@@ -126,9 +219,9 @@ async def process_image(file: UploadFile = File(...)):
         if response_toapp == 'Ok, I will begin reading the text, please point your camera towards it':
             results = perform_ocr_and_speak(image)
         elif response_toapp == 'Ok, I will describe what is in front of you':
-            results = process_object_description(image)
-        #elif response_toapp == 'Ok, locating the object':
-            #results = locate_object(image)
+            results = analyze_image_with_gpt(image)
+        elif response_toapp == 'Ok, locating the object':
+            results = hand_to_object_finder(image)
         else:
             results = "Invalid action specified."
         
