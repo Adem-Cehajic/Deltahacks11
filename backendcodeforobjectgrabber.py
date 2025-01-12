@@ -6,8 +6,12 @@ from PIL import Image
 import numpy as np
 import math
 import time
+from sentence_transformers import SentenceTransformer, util 
+
+#all model configas
+sentance_model = SentenceTransformer('all-MiniLM-L6-v2')
 # yolo model
-model = YOLO("yolov8m.pt") 
+model = YOLO("yolov8l.pt") 
 
 #depthestimator model also note to SAMMY if running this from ur computer change device to 'cuda' i only put cpu cuz mine isnt powerful enough
 depth_estimator = pipeline(task="depth-estimation", model="depth-anything/Depth-Anything-V2-Small-hf", device='cuda')
@@ -20,7 +24,11 @@ hands = mp_hands.Hands(static_image_mode=False,
                        min_detection_confidence=0.5,
                        min_tracking_confidence=0.5)
 mp_drawing = mp.solutions.drawing_utils
+#model configs done
 
+#get desired object
+i = input('gimme da object')
+query_embedding = sentance_model.encode(i, convert_to_tensor=True)
 # get webcam
 cap = cv2.VideoCapture(0)
 if not cap.isOpened():
@@ -29,6 +37,7 @@ if not cap.isOpened():
 
 #function for full thing which is called upon wanting to find an object
 def handtoobjectfinder():
+    name = ''
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -53,9 +62,13 @@ def handtoobjectfinder():
         depth_colored = cv2.applyColorMap(normalized_depth, cv2.COLORMAP_MAGMA)  # Colorize for better visualization
 
         c = 0
+        things = []
+        x1s, y1s, x2s, y2s = 0, 0, 0, 0
     # Draw YOLO detections
         for box in yolo_results[0].boxes:
             class_id = int(box.cls)
+            label = model.names[class_id]
+
     # no ppl and ppl counter
             if class_id == 0:
                 c += 1
@@ -63,9 +76,9 @@ def handtoobjectfinder():
 
     # Get box coordinates
             x1, y1, x2, y2 = map(int, box.xyxy[0])  # Bounding box coordinates
-
-    # Map class ID to label
-            label = model.names[class_id]
+            if name == label:
+                x1s, y1s, x2s, y2s = x1, y1, x2, y2
+    
 
     # Draw bounding box
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
@@ -73,9 +86,15 @@ def handtoobjectfinder():
     # Put label and confidence text
             text = f"{label}"
             cv2.putText(frame, text, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            things = things + [model.names[class_id]]
         #this makes vector vector used later for direction
-            object_x = (x1 + x2) // 2
-            object_y = (y1 + y2) // 2
+        if things != []:
+            doc_embeddings = sentance_model.encode(things, convert_to_tensor=True)
+            cosine_scores = util.cos_sim(query_embedding, doc_embeddings)[0] 
+            ranked_docs = sorted(zip(cosine_scores.tolist(), things), reverse=True, key=lambda x: x[0])
+            score, name = ranked_docs[0]
+        object_x = (x1s + x2s) // 2
+        object_y = (y1s + y2s) // 2
         
 
     # HANDS
