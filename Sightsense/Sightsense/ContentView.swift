@@ -1,36 +1,74 @@
-//
-//  ContentView.swift
-//  Sightsense
-//
-//  Created by Aiden Ly on 2025-01-11.
-//
-
 import SwiftUI
+import AVFoundation
+
+enum AppFlowState {
+    case loading
+    case welcome      // "Tap to get started"
+    case permissions  // Camera & mic permission
+    case tutorial     // 2-minute voice tutorial
+    case home         // Final home page with voice interface
+}
 
 struct ContentView: View {
-    private let cameraManager = CameraManager()
+    @State private var flowState: AppFlowState = .loading
+
+    // We’ll share one TTS synthesizer for spoken prompts
+    private let tts = AVSpeechSynthesizer()
 
     var body: some View {
-        VStack(spacing: 20) {
-            Text("Object Tracker")
-                .font(.title)
-                .padding()
+        ZStack {
+            // Common background color #afc4d6
+            Color(red: 175 / 255, green: 196 / 255, blue: 214 / 255)
+                .ignoresSafeArea()
+            
+            switch flowState {
+            case .loading:
+                LoadingView {
+                    // After 3 seconds, transition to welcome
+                    withAnimation(.easeOut(duration: 1)) {
+                        flowState = .welcome
+                    }
+                }
 
-            Button("Start Camera") {
-                cameraManager.start()
-            }
-            .padding()
-            .background(Color.blue)
-            .foregroundColor(.white)
-            .cornerRadius(10)
+            case .welcome:
+                WelcomeView {
+                    // When user taps, read “Tap to get started.”
+                    speak("Tap to get started")
+                } onNext: {
+                    // Once they tap, we move to permissions
+                    flowState = .permissions
+                }
 
-            Button("Stop Camera") {
-                cameraManager.stop()
+            case .permissions:
+                PermissionsView(tts: tts, onPermissionsComplete: {
+                    flowState = .tutorial
+                })
+
+            case .tutorial:
+                TutorialView(tts: tts) {
+                    withAnimation(.easeOut(duration: 1)) {
+                        flowState = .home
+                    }
+                }
+                .onTapGesture {
+                    // Stop any ongoing speech
+                    tts.stopSpeaking(at: .immediate)
+                    // Transition to home screen
+                    withAnimation(.easeOut(duration: 1)) {
+                        flowState = .home
+                    }
+                }
+
+
+            case .home:
+                HomeView()
             }
-            .padding()
-            .background(Color.red)
-            .foregroundColor(.white)
-            .cornerRadius(10)
         }
+    }
+
+    private func speak(_ text: String) {
+        let utterance = AVSpeechUtterance(string: text)
+        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        tts.speak(utterance)
     }
 }

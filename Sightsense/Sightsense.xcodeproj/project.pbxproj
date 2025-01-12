@@ -12,6 +12,12 @@
 		CF2AE9852D33003A001A5CFD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CF2AE9842D33003A001A5CFD /* Assets.xcassets */; };
 		CF2AE9882D33003A001A5CFD /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CF2AE9872D33003A001A5CFD /* Preview Assets.xcassets */; };
 		CF2AE98F2D330172001A5CFD /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF2AE98E2D330172001A5CFD /* CameraManager.swift */; };
+		CF2AE9912D3338D2001A5CFD /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF2AE9902D3338D2001A5CFD /* SpeechRecognizer.swift */; };
+		CF2AE9932D3357CD001A5CFD /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF2AE9922D3357CD001A5CFD /* LoadingView.swift */; };
+		CF2AE9952D3357E6001A5CFD /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF2AE9942D3357E6001A5CFD /* WelcomeView.swift */; };
+		CF2AE9972D3357FA001A5CFD /* PermissionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF2AE9962D3357FA001A5CFD /* PermissionsView.swift */; };
+		CF2AE9992D335817001A5CFD /* TutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF2AE9982D335817001A5CFD /* TutorialView.swift */; };
+		CF2AE99B2D33583C001A5CFD /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF2AE99A2D33583C001A5CFD /* HomeView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +27,12 @@
 		CF2AE9842D33003A001A5CFD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CF2AE9872D33003A001A5CFD /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		CF2AE98E2D330172001A5CFD /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
+		CF2AE9902D3338D2001A5CFD /* SpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
+		CF2AE9922D3357CD001A5CFD /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
+		CF2AE9942D3357E6001A5CFD /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		CF2AE9962D3357FA001A5CFD /* PermissionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsView.swift; sourceTree = "<group>"; };
+		CF2AE9982D335817001A5CFD /* TutorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialView.swift; sourceTree = "<group>"; };
+		CF2AE99A2D33583C001A5CFD /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +65,12 @@
 		CF2AE97F2D330039001A5CFD /* Sightsense */ = {
 			isa = PBXGroup;
 			children = (
+				CF2AE99A2D33583C001A5CFD /* HomeView.swift */,
+				CF2AE9982D335817001A5CFD /* TutorialView.swift */,
+				CF2AE9962D3357FA001A5CFD /* PermissionsView.swift */,
+				CF2AE9942D3357E6001A5CFD /* WelcomeView.swift */,
+				CF2AE9922D3357CD001A5CFD /* LoadingView.swift */,
+				CF2AE9902D3338D2001A5CFD /* SpeechRecognizer.swift */,
 				CF2AE98E2D330172001A5CFD /* CameraManager.swift */,
 				CF2AE9802D330039001A5CFD /* SightsenseApp.swift */,
 				CF2AE9822D330039001A5CFD /* ContentView.swift */,
@@ -140,8 +158,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CF2AE99B2D33583C001A5CFD /* HomeView.swift in Sources */,
 				CF2AE9832D330039001A5CFD /* ContentView.swift in Sources */,
+				CF2AE9952D3357E6001A5CFD /* WelcomeView.swift in Sources */,
+				CF2AE9912D3338D2001A5CFD /* SpeechRecognizer.swift in Sources */,
 				CF2AE98F2D330172001A5CFD /* CameraManager.swift in Sources */,
+				CF2AE9992D335817001A5CFD /* TutorialView.swift in Sources */,
+				CF2AE9932D3357CD001A5CFD /* LoadingView.swift in Sources */,
+				CF2AE9972D3357FA001A5CFD /* PermissionsView.swift in Sources */,
 				CF2AE9812D330039001A5CFD /* SightsenseApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -279,7 +303,10 @@
 				DEVELOPMENT_TEAM = X9W59C2LB4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_NSCameraUsageDescription = "\"We need access to your camera for object tracking.\"";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "\"The microphone will be used for voice commands.\"";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "\"Speech Recognition will be used to interpret your commands.\"";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -309,7 +336,10 @@
 				DEVELOPMENT_TEAM = X9W59C2LB4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_NSCameraUsageDescription = "\"We need access to your camera for object tracking.\"";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "\"The microphone will be used for voice commands.\"";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "\"Speech Recognition will be used to interpret your commands.\"";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
