@@ -56,11 +56,23 @@ def analyze_image_with_gpt(image_path, api_key):
     except Exception as e:
         return f"Error: {str(e)}"
 
+def delete_image(image_path):
+    try:
+        if os.path.exists(image_path):
+            os.remove(image_path)
+            print(f"Image {image_path} deleted successfully.")
+        else:
+            print(f"Image {image_path} does not exist.")
+    except Exception as e:
+        print(f"Error deleting image: {str(e)}")
+
+
 # Main execution
 api_key = os.getenv("OPENAI_API_KEY")  # Get API key from environment variable
 image_path = capture_image()
 if image_path:
     description = analyze_image_with_gpt(image_path, api_key)
     print("Image Description:", description)
+    delete_image(image_path)  # Delete the image after analysis
 else:
     print("Image capture failed. Cannot proceed with analysis.")
